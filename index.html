@@ -25,11 +25,24 @@
       db.ref('presentation/currentSection').set(id);
     }
 
+    // Listen for changes and update the visible section and tab highlight
     db.ref('presentation/currentSection').on('value', (snapshot) => {
       const id = snapshot.val() || 'current';
+      // Hide all sections
       document.querySelectorAll('.section').forEach(sec => sec.classList.add('hidden'));
-      document.getElementById(id).classList.remove('hidden');
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('bg-blue-100', 'font-semibold'));
+      // Show the selected section
+      const activeSection = document.getElementById(id);
+      if (activeSection) activeSection.classList.remove('hidden');
+
+      // Highlight the active tab
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        // Remove highlight from all
+        btn.classList.remove('bg-blue-100', 'font-semibold', 'text-blue-700');
+        // Add highlight to the active one
+        if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(`'${id}'`)) {
+          btn.classList.add('bg-blue-100', 'font-semibold', 'text-blue-700');
+        }
+      });
     });
 
     // Set default section on load (only if not set)
