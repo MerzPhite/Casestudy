@@ -5,6 +5,55 @@
   <title>Case Study Presentation: Sally's Financial Advice</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Firebase App (the core Firebase SDK) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBet6Qsfved8nzNPBrTXmyEVP_4DiXcLCU",
+      authDomain: "casestudy-a2029.firebaseapp.com",
+      projectId: "casestudy-a2029",
+      storageBucket: "casestudy-a2029.firebasestorage.app",
+      messagingSenderId: "1084039883940",
+      appId: "1:1084039883940:web:a1779084f855cd13604a31",
+      measurementId: "G-L70QS99HW7"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function showSection(id) {
+      db.ref('presentation/currentSection').set(id);
+    }
+
+    db.ref('presentation/currentSection').on('value', (snapshot) => {
+      const id = snapshot.val() || 'current';
+      document.querySelectorAll('.section').forEach(sec => sec.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('bg-blue-100', 'font-semibold'));
+    });
+
+    // Set default section on load (only if not set)
+    document.addEventListener('DOMContentLoaded', () => {
+      db.ref('presentation/currentSection').once('value', (snapshot) => {
+        if (!snapshot.exists()) {
+          db.ref('presentation/currentSection').set('current');
+        }
+      });
+    });
+
+    // Fee calculator
+    function calculateFee() {
+      const assets = parseFloat(document.getElementById('assets').value) || 0;
+      const fee = assets * 0.0075;
+      document.getElementById('feeResult').textContent = `Estimated annual fee: £${fee.toLocaleString(undefined, {maximumFractionDigits: 2})}`;
+    }
+
+    // Toggle case details
+    function toggleDetails() {
+      const details = document.getElementById('caseDetails');
+      details.classList.toggle('hidden');
+    }
+  </script>
 </head>
 <body class="bg-gray-50 text-gray-900">
   <div class="max-w-4xl mx-auto p-6">
@@ -141,33 +190,5 @@ retirement for about a month at a time, Thailand Vietnam, Cambodia staying in ni
       <textarea class="w-full border rounded p-2" rows="3" placeholder="Type your notes or panel questions here..."></textarea>
     </section>
   </div>
-
-  <script>
-    // Tab navigation
-    function showSection(id) {
-      document.querySelectorAll('.section').forEach(sec => sec.classList.add('hidden'));
-      document.getElementById(id).classList.remove('hidden');
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('bg-blue-100', 'font-semibold'));
-      event.target.classList.add('bg-blue-100', 'font-semibold');
-    }
-
-    // Fee calculator
-    function calculateFee() {
-      const assets = parseFloat(document.getElementById('assets').value) || 0;
-      const fee = assets * 0.0075;
-      document.getElementById('feeResult').textContent = `Estimated annual fee: £${fee.toLocaleString(undefined, {maximumFractionDigits: 2})}`;
-    }
-
-    // Toggle case details
-    function toggleDetails() {
-      const details = document.getElementById('caseDetails');
-      details.classList.toggle('hidden');
-    }
-
-    // Set default tab
-    document.addEventListener('DOMContentLoaded', () => {
-      showSection('current');
-    });
-  </script>
 </body>
 </html>
