@@ -37,10 +37,10 @@
       // Highlight the active tab
       document.querySelectorAll('.tab-btn').forEach(btn => {
         // Remove highlight from all
-        btn.classList.remove('bg-yellow-100', 'font-semibold', 'text-blue-700');
+        btn.classList.remove('bg-blue-100', 'font-semibold', 'text-blue-700');
         // Add highlight to the active one
         if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(`'${id}'`)) {
-          btn.classList.add('bg-yellow-100', 'font-semibold', 'text-blue-700');
+          btn.classList.add('bg-blue-100', 'font-semibold', 'text-blue-700');
         }
       });
     });
@@ -66,35 +66,6 @@
       const details = document.getElementById('caseDetails');
       details.classList.toggle('hidden');
     }
-
-    // Select an advice box and update Firebase
-    function selectAdviceBox(index) {
-      firebase.database().ref('presentation/currentAdviceBox').set(index);
-    }
-
-    // Listen for changes and update UI
-    firebase.database().ref('presentation/currentAdviceBox').on('value', (snapshot) => {
-      const selected = snapshot.val();
-      document.querySelectorAll('.advice-box').forEach((box, idx) => {
-        // Remove all possible highlight classes first
-        box.classList.remove('bg-blue-100', 'border-blue-500', 'bg-yellow-100', 'border-yellow-500', 'shadow-lg');
-        if (idx === selected) {
-          box.classList.add('bg-yellow-100', 'border-yellow-500', 'shadow-lg');
-          box.classList.remove('bg-white');
-          box.querySelector('.advice-details').classList.remove('hidden');
-        } else {
-          box.classList.add('bg-white');
-          box.querySelector('.advice-details').classList.add('hidden');
-        }
-      });
-    });
-
-    // Set a default on first load
-    firebase.database().ref('presentation/currentAdviceBox').once('value', (snapshot) => {
-      if (!snapshot.exists()) {
-        firebase.database().ref('presentation/currentAdviceBox').set(0);
-      }
-    });
   </script>
 </head>
 <body class="bg-gray-50 text-gray-900">
