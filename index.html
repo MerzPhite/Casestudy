@@ -66,6 +66,45 @@
       const details = document.getElementById('caseDetails');
       details.classList.toggle('hidden');
     }
+
+    // Toggle the dropdown for the first advice box
+    function toggleDropdown(index) {
+      const details = document.getElementById(`dropdown-details-${index}`);
+      const icon = document.getElementById(`dropdown-icon-${index}`);
+      const isOpen = !details.classList.contains('hidden');
+      // Close all dropdowns (if you want only one open at a time)
+      document.querySelectorAll('.advice-details').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('svg[id^="dropdown-icon-"]').forEach(el => el.classList.remove('rotate-180'));
+      if (!isOpen) {
+        details.classList.remove('hidden');
+        icon.classList.add('rotate-180');
+      }
+      // Optionally, sync dropdown state to Firebase
+      firebase.database().ref('presentation/currentDropdown').set(isOpen ? null : index);
+    }
+
+    // Listen for dropdown state changes from Firebase
+    firebase.database().ref('presentation/currentDropdown').on('value', (snapshot) => {
+      const openIndex = snapshot.val();
+      document.querySelectorAll('.advice-details').forEach((el, idx) => {
+        if (idx === openIndex) {
+          el.classList.remove('hidden');
+          const icon = document.getElementById(`dropdown-icon-${idx}`);
+          if (icon) icon.classList.add('rotate-180');
+        } else {
+          el.classList.add('hidden');
+          const icon = document.getElementById(`dropdown-icon-${idx}`);
+          if (icon) icon.classList.remove('rotate-180');
+        }
+      });
+    });
+
+    // Set default dropdown state on first load
+    firebase.database().ref('presentation/currentDropdown').once('value', (snapshot) => {
+      if (!snapshot.exists()) {
+        firebase.database().ref('presentation/currentDropdown').set(null);
+      }
+    });
   </script>
 </head>
 <body class="bg-gray-50 text-gray-900">
@@ -93,8 +132,25 @@
     <!-- Sections -->
     <section id="current" class="section">
       <h2 class="text-2xl font-semibold mb-4">What are the advice opportunities now?</h2>
+      <div class="advice-box cursor-pointer transition-all p-4 rounded border bg-white" onclick="toggleDropdown(0)">
+        <div class="flex items-center justify-between">
+          <span class="font-semibold">Review and optimize current investment portfolio (hasn't been reviewed in 5 years).</span>
+          <svg id="dropdown-icon-0" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+        <div id="dropdown-details-0" class="advice-details hidden mt-2 text-gray-700">
+          <ul class="list-disc ml-6">
+            <li><strong>Performance drift:</strong> Over time, investments may no longer match Sally's goals or risk profile, especially after 5 years without review.</li>
+            <li><strong>Fee reduction:</strong> Reviewing can identify high-fee funds or products and switch to more cost-effective options.</li>
+            <li><strong>Tax efficiency:</strong> Optimizing the portfolio can help reduce unnecessary tax liabilities and improve after-tax returns.</li>
+            <li><strong>Changing circumstances:</strong> Sally's life, goals, and the market have likely changed, so her portfolio should adapt too.</li>
+            <li><strong>Regulatory changes:</strong> New rules or products may offer better solutions than what she currently holds.</li>
+            <li><strong>Peace of mind:</strong> Regular reviews build confidence and understanding, especially for clients who don't follow their investments closely.</li>
+          </ul>
+        </div>
+      </div>
       <ul class="list-disc ml-6 space-y-2">
-        <li>Review and optimize current investment portfolio (hasn't been reviewed in 5 years).</li>
         <li>Educate Sally on her investments and financial planning.</li>
         <li>Assess pension contributions and retirement planning to ensure target income.</li>
         <li>Evaluate tax efficiency and inheritance tax (IHT) planning.</li>
@@ -139,15 +195,15 @@
     </section>
 
     <section id="trust" class="section hidden">
-      <h2 class="text-2xl font-semibold mb-4">How would you build trust with Sally?</h2>
+      <h2 class="text-2xl font-semibold mb-4"><u>How would you build trust with Sally?</u></h2>
       
       <ul class="list-disc ml-6 space-y-2">
         <li><u>Pathos (Emotional Connection)</u></li>
         <ul class="list-disc ml-6 space-y-2">
         <li>Build trust through authentic and meaningful converstions not related to finance</li>
-        <li>Hear more about her plans to travel to the far east and reference my own travel to Thailand</li>
-        <li>Ask more about her children and the universitiies there are at and what they are studying</li> 
-        <li>Expand on other things she may have planned for retirement and the why behind it. Show understanding.</li> </ul>
+        <li>Hear more about her plans to travel to the far east and reference my own travel to Thailand.</li>
+        <li>Ask more about her children and the universitiies they are at and what they are studying.</li> 
+        <li>Expand on other things she may have planned for retirement and the <u>why</u> behind it. Show understanding.</li> </ul>
         <br>
         <li><u>Ethos (Credibility) - Explain my qualifications and experience.</u> </li>
         <ul class="list-disc ml-6 space-y-2">
