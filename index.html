@@ -86,14 +86,20 @@
     // Listen for dropdown state changes from Firebase
     firebase.database().ref('presentation/currentDropdown').on('value', (snapshot) => {
       const openIndex = snapshot.val();
-      document.querySelectorAll('.advice-details').forEach((el, idx) => {
+      document.querySelectorAll('.advice-box').forEach((box, idx) => {
+        const details = box.querySelector('.advice-details');
+        const icon = document.getElementById(`dropdown-icon-${idx}`);
+        // Remove all highlight classes first
+        box.classList.remove('bg-green-100', 'border-green-500', 'shadow-lg', 'bg-white', 'bg-yellow-100', 'border-yellow-500');
         if (idx === openIndex) {
-          el.classList.remove('hidden');
-          const icon = document.getElementById(`dropdown-icon-${idx}`);
+          // Highlight the open dropdown box in green
+          box.classList.add('bg-green-100', 'border-green-500', 'shadow-lg');
+          if (details) details.classList.remove('hidden');
           if (icon) icon.classList.add('rotate-180');
         } else {
-          el.classList.add('hidden');
-          const icon = document.getElementById(`dropdown-icon-${idx}`);
+          // Use your default color for closed boxes (e.g., white or yellow)
+          box.classList.add('bg-white');
+          if (details) details.classList.add('hidden');
           if (icon) icon.classList.remove('rotate-180');
         }
       });
@@ -109,12 +115,12 @@
 </head>
 <body class="bg-gray-50 text-gray-900">
   <div class="flex justify-center my-6">
-    <img src="Alogo.png" alt="Logo" class="h-20 w-auto">
+    <img src="attivo-log.webp" alt="Logo" class="h-20 w-auto">
   </div>
   <div class="max-w-4xl mx-auto p-6">
     <!-- Header -->
     <header class="mb-8">
-      <h1 class="text-3xl font-bold mb-2">Case Study: Financial Advice for Sally</h1>
+      <h1 class="text-3xl font-bold mb-2"><u>Case Study: Financial Advice for Sally</u></h1>
       <p class="text-lg text-gray-700"><u>4th June 2025</u></p>
     </header>
 
@@ -132,45 +138,120 @@
     <!-- Sections -->
     <section id="current" class="section">
       <h2 class="text-2xl font-semibold mb-4">What are the advice opportunities now?</h2>
-      <div class="advice-box cursor-pointer transition-all p-4 rounded border bg-white" onclick="toggleDropdown(0)">
-        <div class="flex items-center justify-between">
-          <span class="font-semibold">Review and optimize current investment portfolio (hasn't been reviewed in 5 years).</span>
-          <svg id="dropdown-icon-0" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-          </svg>
+      <div id="advice-boxes" class="space-y-3">
+        <!-- 0 -->
+        <div class="advice-box cursor-pointer transition-all p-4 rounded border bg-white" onclick="toggleDropdown(0)">
+          <div class="flex items-center justify-between">
+            <span class="font-semibold">Review and optimize current investment portfolio (hasn't been reviewed in 5 years).</span>
+            <svg id="dropdown-icon-0" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          <div id="dropdown-details-0" class="advice-details hidden mt-2 text-gray-700">
+            <ul class="list-disc ml-6">
+              <li><strong>Performance drift:</strong> Over time, investments may no longer match Sally's goals or risk profile, especially after 5 years without review.</li>
+              <li><strong>Fee reduction:</strong> Reviewing can identify high-fee funds or products and switch to more cost-effective options.</li>
+              <li><strong>Tax efficiency:</strong> Optimizing the portfolio can help reduce unnecessary tax liabilities and improve after-tax returns.</li>
+              <li><strong>Changing circumstances:</strong> Sally's life, goals, and the market have likely changed, so her portfolio should adapt too.</li>
+              <li><strong>Regulatory changes:</strong> New rules or products may offer better solutions than what she currently holds.</li>
+              <li><strong>Peace of mind:</strong> Regular reviews build confidence and understanding, especially for clients who don't follow their investments closely.</li>
+            </ul>
+          </div>
         </div>
-        <div id="dropdown-details-0" class="advice-details hidden mt-2 text-gray-700">
-          <ul class="list-disc ml-6">
-            <li><strong>Performance drift:</strong> Over time, investments may no longer match Sally's goals or risk profile, especially after 5 years without review.</li>
-            <li><strong>Fee reduction:</strong> Reviewing can identify high-fee funds or products and switch to more cost-effective options.</li>
-            <li><strong>Tax efficiency:</strong> Optimizing the portfolio can help reduce unnecessary tax liabilities and improve after-tax returns.</li>
-            <li><strong>Changing circumstances:</strong> Sally's life, goals, and the market have likely changed, so her portfolio should adapt too.</li>
-            <li><strong>Regulatory changes:</strong> New rules or products may offer better solutions than what she currently holds.</li>
-            <li><strong>Peace of mind:</strong> Regular reviews build confidence and understanding, especially for clients who don't follow their investments closely.</li>
-          </ul>
+        <!-- 1 -->
+        <div class="advice-box cursor-pointer transition-all p-4 rounded border bg-white" onclick="toggleDropdown(1)">
+          <div class="flex items-center justify-between">
+            <span class="font-semibold">Educate Sally on her investments and financial planning.</span>
+            <svg id="dropdown-icon-1" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          <div id="dropdown-details-1" class="advice-details hidden mt-2 text-gray-700">
+            <ul class="list-disc ml-6">
+              <li>Provide simple, jargon-free explanations of her current investments and financial concepts.</li>
+              <li>Offer resources and answer questions to empower Sally to make informed decisions.</li>
+              <li>Increase her confidence and engagement with her financial plan.</li>
+            </ul>
+          </div>
+        </div>
+        <!-- 2 -->
+        <div class="advice-box cursor-pointer transition-all p-4 rounded border bg-white" onclick="toggleDropdown(2)">
+          <div class="flex items-center justify-between">
+            <span class="font-semibold">Assess pension contributions and retirement planning to ensure target income.</span>
+            <svg id="dropdown-icon-2" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          <div id="dropdown-details-2" class="advice-details hidden mt-2 text-gray-700">
+            <ul class="list-disc ml-6">
+              <li>Calculate projected retirement income based on current and future pension contributions.</li>
+              <li>Suggest adjustments to contributions or investment strategy to meet her retirement income goal.</li>
+              <li>Ensure Sally is on track for a comfortable retirement at 65.</li>
+            </ul>
+          </div>
+        </div>
+        <!-- 3 -->
+        <div class="advice-box cursor-pointer transition-all p-4 rounded border bg-white" onclick="toggleDropdown(3)">
+          <div class="flex items-center justify-between">
+            <span class="font-semibold">Evaluate tax efficiency and inheritance tax (IHT) planning.</span>
+            <svg id="dropdown-icon-3" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          <div id="dropdown-details-3" class="advice-details hidden mt-2 text-gray-700">
+            <ul class="list-disc ml-6">
+              <li>Review current investment structures for tax efficiency.</li>
+              <li>Discuss strategies to mitigate inheritance tax and maximize legacy for her children.</li>
+              <li>Ensure Sally understands the implications of IHT and available planning options.</li>
+            </ul>
+          </div>
+        </div>
+        <!-- 4 -->
+        <div class="advice-box cursor-pointer transition-all p-4 rounded border bg-white" onclick="toggleDropdown(4)">
+          <div class="flex items-center justify-between">
+            <span class="font-semibold">Plan for helping children onto the property ladder.</span>
+            <svg id="dropdown-icon-4" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          <div id="dropdown-details-4" class="advice-details hidden mt-2 text-gray-700">
+            <ul class="list-disc ml-6">
+              <li>Due to the 5–10 year period, investment is most likely the best course of action to prevent inflation erosion.</li>
+              <li>Potential for setting up investment in the client's name to maintain control, in addition to considering a Lifetime ISA (LISA).</li>
+            </ul>
+          </div>
+        </div>
+        <!-- 5 -->
+        <div class="advice-box cursor-pointer transition-all p-4 rounded border bg-white" onclick="toggleDropdown(5)">
+          <div class="flex items-center justify-between">
+            <span class="font-semibold">Review SIPP contributions and investment strategy (medium/high risk).</span>
+            <svg id="dropdown-icon-5" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          <div id="dropdown-details-5" class="advice-details hidden mt-2 text-gray-700">
+            <ul class="list-disc ml-6">
+              <li>Ensure SIPP contributions are tax-efficient and aligned with Sally's fluctuating income.</li>
+              <li>Review investment choices to match her medium/high risk profile and retirement goals.</li>
+            </ul>
+          </div>
+        </div>
+        <!-- 6 -->
+        <div class="advice-box cursor-pointer transition-all p-4 rounded border bg-white" onclick="toggleDropdown(6)">
+          <div class="flex items-center justify-between">
+            <span class="font-semibold">Discuss legacy planning and potential inheritance from her mother.</span>
+            <svg id="dropdown-icon-6" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          <div id="dropdown-details-6" class="advice-details hidden mt-2 text-gray-700">
+            <ul class="list-disc ml-6">
+              <li>Prepare for possible inheritance and review/update wills as needed.</li>
+              <li>Discuss Sally's legacy wishes and ensure her estate plan reflects her intentions.</li>
+            </ul>
+          </div>
         </div>
       </div>
-      <div class="advice-box cursor-pointer transition-all p-4 rounded border bg-white" onclick="toggleDropdown(4)">
-        <div class="flex items-center justify-between">
-          <span class="font-semibold">Plan for helping children onto the property ladder.</span>
-          <svg id="dropdown-icon-4" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
-        <div id="dropdown-details-4" class="advice-details hidden mt-2 text-gray-700">
-          <ul class="list-disc ml-6">
-            <li>Due to the 5–10 year period, investment is most likely the best course of action to prevent inflation erosion.</li>
-            <li>Potential for setting up investment in the client's name to maintain control, in addition to considering a Lifetime ISA (LISA).</li>
-          </ul>
-        </div>
-      </div>
-      <ul class="list-disc ml-6 space-y-2">
-        <li>Educate Sally on her investments and financial planning.</li>
-        <li>Assess pension contributions and retirement planning to ensure target income.</li>
-        <li>Evaluate tax efficiency and inheritance tax (IHT) planning.</li>
-        <li>Review SIPP contributions and investment strategy (medium/high risk).</li>
-        <li>Discuss legacy planning and potential inheritance from her mother.</li>
-      </ul>
     </section>
 
     <section id="future" class="section hidden">
@@ -187,7 +268,7 @@
     </section>
 
     <section id="fees" class="section hidden">
-      <h2 class="text-2xl font-semibold mb-4">Fees: What would you charge?</h2>
+      <h2 class="text-2xl font-semibold mb-4">Fees: What would I charge?</h2>
       <div class="mb-4">
         <strong>Initial Advice Fee:</strong>
         <p>3% fee with a minimum of £1,000. 
@@ -244,37 +325,32 @@
       <h2 class="text-2xl font-semibold mb-4">Case Study Details</h2>
       <button onclick="toggleDetails()" class="mb-4 bg-gray-200 px-3 py-1 rounded">Show/Hide Full Case Study</button>
       <div id="caseDetails" class="hidden bg-white p-4 rounded shadow">
-        <pre class="whitespace-pre-wrap text-sm">
-The client does not follow her investments and has been guided by previous advisers. She is
-currently in Attivo's ongoing service paying 0.75% per year, and she is not convinced of the need for
-a review and hasn't had one for 5 years.
-The client has not reviewed holdings for many years and currently doesn't keep track of anything
-other than the bottom line. The client has little understanding of investments but is keen to learn
-more.
-The client is looking to retire at 65 and wind up the architect business then. It has no intrinsic value,
-only commissions in the past by word of mouth and reputation. Her income fluctuates each year but
-on average she takes an income of £60,000 per year. Her accountant can provide more details if
-needed.
-• Would like to ensure she has pension income in retirement equal to her current salary
-• Would like to help children onto property ladder in future, likely to be in next 5 to 10 years
-• Client open to change but needs to be convinced of reasons
-• Medium/High attitude to risk
-• No large expenditure planned
-• Some concerns around IHT and tax efficiency of current investments, and is keen to leave a
-much of a legacy as possible to the children
-• Unsure on whether she has sufficient monies to retire in 5 years based on the level of
-income she is looking for
-• Her mother is currently 87, and in poor health. Her father passed away 5 years ago. In the
-event of her passing, Sarah is an only child and expects to inherit an estate worth up to £2m.
-She has no idea whether her mother has spoken to an Adviser in respect of IHT, and doesn't
-understand the implications of this
-• She currently pays around £20,000 per year into her SIPP, although this can fluctuate
-depending on her income
-• One child is in their first year at university, staying in halls which the client pays for, the other
-about to do GCSEs and wants to go to university after A levels.
-• House is paid for and no plans to move. Would like to travel regularly to the Far East in
-retirement for about a month at a time, Thailand Vietnam, Cambodia staying in nice hotels.
-        </pre>
+        <p>
+          The client does not follow her investments and has been guided by previous advisers. She is currently in Attivo's ongoing service paying 0.75% per year, and she is not convinced of the need for a review and hasn't had one for 5 years.
+        </p>
+        <br>
+        <p>
+          The client has not reviewed holdings for many years and currently doesn't keep track of anything other than the bottom line. The client has little understanding of investments but is keen to learn more.
+        </p>
+        <br>
+    
+        <p>
+          The client is looking to retire at 65 and wind up the architect business then. It has no intrinsic value, only commissions in the past by word of mouth and reputation. Her income fluctuates each year but on average she takes an income of £60,000 per year. Her accountant can provide more details if needed.
+        </p>
+        <br>
+        <ul class="list-disc ml-6">
+          <li>Would like to ensure she has pension income in retirement equal to her current salary</li>
+          <li>Would like to help children onto property ladder in future, likely to be in next 5 to 10 years</li>
+          <li>Client open to change but needs to be convinced of reasons</li>
+          <li>Medium/High attitude to risk</li>
+          <li>No large expenditure planned</li>
+          <li>Some concerns around IHT and tax efficiency of current investments, and is keen to leave as much of a legacy as possible to the children</li>
+          <li>Unsure on whether she has sufficient monies to retire in 5 years based on the level of income she is looking for</li>
+          <li>Her mother is currently 87, and in poor health. Her father passed away 5 years ago. In the event of her passing, Sarah is an only child and expects to inherit an estate worth up to £2m. She has no idea whether her mother has spoken to an Adviser in respect of IHT, and doesn't understand the implications of this</li>
+          <li>She currently pays around £20,000 per year into her SIPP, although this can fluctuate depending on her income</li>
+          <li>One child is in their first year at university, staying in halls which the client pays for, the other about to do GCSEs and wants to go to university after A levels.</li>
+          <li>House is paid for and no plans to move. Would like to travel regularly to the Far East in retirement for about a month at a time, Thailand, Vietnam, Cambodia staying in nice hotels.</li>
+        </ul>
       </div>
     </section>
 
