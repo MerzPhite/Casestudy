@@ -111,6 +111,51 @@
         firebase.database().ref('presentation/currentDropdown').set(null);
       }
     });
+
+    // --- Future Opportunities Dropdown Logic ---
+    function toggleFutureDropdown(index) {
+      const details = document.getElementById(`future-dropdown-details-${index}`);
+      const icon = document.getElementById(`future-dropdown-icon-${index}`);
+      const isOpen = !details.classList.contains('hidden');
+      // Close all dropdowns (only one open at a time)
+      document.querySelectorAll('.future-advice-details').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('svg[id^="future-dropdown-icon-"]').forEach(el => el.classList.remove('rotate-180'));
+      if (!isOpen) {
+        details.classList.remove('hidden');
+        icon.classList.add('rotate-180');
+      }
+      // Sync dropdown state to Firebase
+      firebase.database().ref('presentation/currentFutureDropdown').set(isOpen ? null : index);
+    }
+
+    // Listen for future dropdown state changes from Firebase
+    firebase.database().ref('presentation/currentFutureDropdown').on('value', (snapshot) => {
+      const openIndex = snapshot.val();
+      document.querySelectorAll('.future-advice-box').forEach((box, idx) => {
+        const details = box.querySelector('.future-advice-details');
+        const icon = document.getElementById(`future-dropdown-icon-${idx}`);
+        // Remove all highlight classes first
+        box.classList.remove('bg-green-100', 'border-green-500', 'shadow-lg', 'bg-white', 'bg-yellow-100', 'border-yellow-500');
+        if (idx === openIndex) {
+          // Highlight the open dropdown box in green
+          box.classList.add('bg-green-100', 'border-green-500', 'shadow-lg');
+          if (details) details.classList.remove('hidden');
+          if (icon) icon.classList.add('rotate-180');
+        } else {
+          // Use default color for closed boxes
+          box.classList.add('bg-white');
+          if (details) details.classList.add('hidden');
+          if (icon) icon.classList.remove('rotate-180');
+        }
+      });
+    });
+
+    // Set default future dropdown state on first load
+    firebase.database().ref('presentation/currentFutureDropdown').once('value', (snapshot) => {
+      if (!snapshot.exists()) {
+        firebase.database().ref('presentation/currentFutureDropdown').set(null);
+      }
+    });
   </script>
 </head>
 <body class="bg-gray-50 text-gray-900">
@@ -142,7 +187,7 @@
         <!-- 0 -->
         <div class="advice-box cursor-pointer transition-all p-4 rounded border bg-white" onclick="toggleDropdown(0)">
           <div class="flex items-center justify-between">
-            <span class="font-semibold">Review and optimize current investment portfolio (hasn't been reviewed in 5 years).</span>
+            <span class="font-semibold">Review and re balance current investment portfolio (hasn't been reviewed in 5 years).</span>
             <svg id="dropdown-icon-0" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
@@ -256,15 +301,106 @@
 
     <section id="future" class="section hidden">
       <h2 class="text-2xl font-semibold mb-4">What might the advice opportunities be for the future?</h2>
-      <ul class="list-disc ml-6 space-y-2">
-        <li>Ongoing retirement income management and drawdown strategy.</li>
-        <li>Adjusting investment strategy as Sally ages and her risk profile changes.</li>
-        <li>Estate planning post-inheritance (potential £2m estate from mother).</li>
-        <li>Tax planning as legislation changes.</li>
-        <li>Supporting children's university and property purchases.</li>
-        <li>Travel and lifestyle planning in retirement.</li>
-        <li>Reviewing and updating wills and power of attorney.</li>
-      </ul>
+      <div id="future-advice-boxes" class="space-y-3">
+        <!-- 0 -->
+        <div class="future-advice-box cursor-pointer transition-all p-4 rounded border bg-white" onclick="toggleFutureDropdown(0)">
+          <div class="flex items-center justify-between">
+            <span class="font-semibold">Ongoing retirement income management and drawdown strategy.</span>
+            <svg id="future-dropdown-icon-0" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          <div id="future-dropdown-details-0" class="future-advice-details hidden mt-2 text-gray-700">
+            <ul class="list-disc ml-6">
+              <li>Ensure Sally's retirement income is managed efficiently and sustainably, with regular reviews and adjustments as needed.</li>
+            </ul>
+          </div>
+        </div>
+        <!-- 1 -->
+        <div class="future-advice-box cursor-pointer transition-all p-4 rounded border bg-white" onclick="toggleFutureDropdown(1)">
+          <div class="flex items-center justify-between">
+            <span class="font-semibold">Adjusting investment strategy as Sally ages and her risk profile changes.</span>
+            <svg id="future-dropdown-icon-1" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          <div id="future-dropdown-details-1" class="future-advice-details hidden mt-2 text-gray-700">
+            <ul class="list-disc ml-6">
+              <li>Review and adapt investment allocations to match Sally's evolving risk tolerance and life stage.</li>
+            </ul>
+          </div>
+        </div>
+        <!-- 2 -->
+        <div class="future-advice-box cursor-pointer transition-all p-4 rounded border bg-white" onclick="toggleFutureDropdown(2)">
+          <div class="flex items-center justify-between">
+            <span class="font-semibold">Estate planning post-inheritance (potential £2m estate from mother).</span>
+            <svg id="future-dropdown-icon-2" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          <div id="future-dropdown-details-2" class="future-advice-details hidden mt-2 text-gray-700">
+            <ul class="list-disc ml-6">
+              <li>Plan for effective management and distribution of inherited assets, considering tax and legacy goals.</li>
+            </ul>
+          </div>
+        </div>
+        <!-- 3 -->
+        <div class="future-advice-box cursor-pointer transition-all p-4 rounded border bg-white" onclick="toggleFutureDropdown(3)">
+          <div class="flex items-center justify-between">
+            <span class="font-semibold">Tax planning as legislation changes.</span>
+            <svg id="future-dropdown-icon-3" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          <div id="future-dropdown-details-3" class="future-advice-details hidden mt-2 text-gray-700">
+            <ul class="list-disc ml-6">
+              <li>Stay updated on tax law changes and adjust strategies to maintain tax efficiency.</li>
+            </ul>
+          </div>
+        </div>
+        <!-- 4 -->
+        <div class="future-advice-box cursor-pointer transition-all p-4 rounded border bg-white" onclick="toggleFutureDropdown(4)">
+          <div class="flex items-center justify-between">
+            <span class="font-semibold">Supporting children's university and property purchases.</span>
+            <svg id="future-dropdown-icon-4" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          <div id="future-dropdown-details-4" class="future-advice-details hidden mt-2 text-gray-700">
+            <ul class="list-disc ml-6">
+              <li>Plan and allocate resources to help children with education and getting onto the property ladder.</li>
+            </ul>
+          </div>
+        </div>
+        <!-- 5 -->
+        <div class="future-advice-box cursor-pointer transition-all p-4 rounded border bg-white" onclick="toggleFutureDropdown(5)">
+          <div class="flex items-center justify-between">
+            <span class="font-semibold">Travel and lifestyle planning in retirement.</span>
+            <svg id="future-dropdown-icon-5" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          <div id="future-dropdown-details-5" class="future-advice-details hidden mt-2 text-gray-700">
+            <ul class="list-disc ml-6">
+              <li>Incorporate travel and lifestyle goals into Sally's long-term financial plan.</li>
+            </ul>
+          </div>
+        </div>
+        <!-- 6 -->
+        <div class="future-advice-box cursor-pointer transition-all p-4 rounded border bg-white" onclick="toggleFutureDropdown(6)">
+          <div class="flex items-center justify-between">
+            <span class="font-semibold">Reviewing and updating wills and power of attorney.</span>
+            <svg id="future-dropdown-icon-6" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          <div id="future-dropdown-details-6" class="future-advice-details hidden mt-2 text-gray-700">
+            <ul class="list-disc ml-6">
+              <li>Ensure legal documents are up to date and reflect Sally's wishes.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section id="fees" class="section hidden">
