@@ -211,6 +211,10 @@
       }
     });
 
+    function setCurrentSection(section) {
+      firebase.database().ref('presentation/currentSection').set(section);
+    }
+
     tailwind.config = {
       theme: {
         extend: {
@@ -220,16 +224,26 @@
         },
       },
     }
+
+    firebase.database().ref('presentation/currentSection').on('value', (snapshot) => {
+      const section = snapshot.val();
+      if (section) {
+        const el = document.getElementById(section);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    });
   </script>
 </head>
 <body class="bg-gray-50 text-gray-900">
   <!-- Sticky Navigation at the very top -->
   <nav class="sticky-nav sticky top-0 w-full z-50 py-2 bg-white shadow">
     <ul class="flex space-x-4 justify-center">
-      <li><a href="#current" class="tab-link px-4 py-2 rounded">1. Current Opportunities</a></li>
-      <li><a href="#future" class="tab-link px-4 py-2 rounded">2. Future Opportunities</a></li>
-      <li><a href="#fees" class="tab-link px-4 py-2 rounded">3. Fees</a></li>
-      <li><a href="#trust" class="tab-link px-4 py-2 rounded">4. Building Trust</a></li>
+      <li><a href="#current" class="tab-link px-4 py-2 rounded" onclick="setCurrentSection('current')">1. Current Opportunities</a></li>
+      <li><a href="#future" class="tab-link px-4 py-2 rounded" onclick="setCurrentSection('future')">2. Future Opportunities</a></li>
+      <li><a href="#fees" class="tab-link px-4 py-2 rounded" onclick="setCurrentSection('fees')">3. Fees</a></li>
+      <li><a href="#trust" class="tab-link px-4 py-2 rounded" onclick="setCurrentSection('trust')">4. Building Trust</a></li>
       <li><a href="#details" class="tab-link px-4 py-2 rounded">5. Case Details</a></li>
     </ul>
   </nav>
@@ -364,7 +378,7 @@
         </div>
       </div>
     </section>
-    <div style="width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;">
+    <div style="background: #ffffff; width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;">
 
     <section id="future" class="section py-12 mb-8 rounded-lg bg-white max-w-4xl mx-auto text-center">
       <h2 class="text-2xl font-semibold mb-4">What might the advice opportunities be for the future?</h2>
@@ -491,7 +505,7 @@
         <div id="feeResult" class="mt-2 text-green-700 font-semibold"></div>
       </div>
     </section>
-    <div style="width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;">
+    <div style="background: #ffffff; width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;">
 
     <section id="trust" class="section py-12 mb-8 rounded-lg bg-white max-w-4xl mx-auto text-center">
       <h2 class="text-2xl font-semibold mb-4"><u>How would you build trust with Sally?</u></h2>
