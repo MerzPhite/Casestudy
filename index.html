@@ -87,6 +87,15 @@
       if (!isOpen) {
         details.classList.remove('hidden');
         icon.classList.add('rotate-180');
+        // Scroll the box into view, offset for sticky nav
+        setTimeout(() => {
+          const box = document.querySelectorAll('.advice-box')[index];
+          if (box) {
+            const yOffset = -80;
+            const y = box.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            window.scrollTo({ top: y, behavior: 'smooth' });
+          }
+        }, 100);
       }
       // Optionally, sync dropdown state to Firebase
       firebase.database().ref('presentation/currentDropdown').set(isOpen ? null : index);
@@ -132,6 +141,14 @@
       if (!isOpen) {
         details.classList.remove('hidden');
         icon.classList.add('rotate-180');
+        setTimeout(() => {
+          const box = document.querySelectorAll('.future-advice-box')[index];
+          if (box) {
+            const yOffset = -80;
+            const y = box.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            window.scrollTo({ top: y, behavior: 'smooth' });
+          }
+        }, 100);
       }
       // Sync dropdown state to Firebase
       firebase.database().ref('presentation/currentFutureDropdown').set(isOpen ? null : index);
@@ -177,6 +194,14 @@
       if (!isOpen) {
         details.classList.remove('hidden');
         icon.classList.add('rotate-180');
+        setTimeout(() => {
+          const box = document.querySelectorAll('.trust-advice-box')[index];
+          if (box) {
+            const yOffset = -80;
+            const y = box.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            window.scrollTo({ top: y, behavior: 'smooth' });
+          }
+        }, 100);
       }
       // Sync dropdown state to Firebase
       firebase.database().ref('presentation/currentTrustDropdown').set(isOpen ? null : index);
@@ -381,7 +406,7 @@
     <div style="background: #ffffff; width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;">
 
     <section id="future" class="section py-12 mb-8 rounded-lg bg-white max-w-4xl mx-auto text-center">
-      <h2 class="text-2xl font-semibold mb-4">What might the advice opportunities be for the future?</h2>
+      <h2 class="text-2xl font-semibold mb-4"><u>What might the advice opportunities be for the future?</u></h2>
       <div id="future-advice-boxes" class="space-y-3">
         <!-- 0 -->
         <div class="future-advice-box cursor-pointer transition-all p-4 rounded" onclick="toggleFutureDropdown(0)">
@@ -486,7 +511,7 @@
   </div>
   
     <section id="fees" class="section py-12 mb-8 rounded-lg ">
-      <h2 class="text-2xl font-semibold mb-4">Fees: What would I charge?</h2>
+      <h2 class="text-2xl font-semibold mb-4"><u>Fees: What would I charge?</u></h2>
       <div class="mb-4">
         <strong>Initial Advice Fee:</strong>
         <p>3% fee with a minimum of £1,000. 
@@ -567,7 +592,7 @@
       </div>
     </section>
     </div>
-    <section id="details" class="section py-12 mb-8 rounded-lg shadow bg-white">
+    <section id="details" class="section py-12 mb-8 rounded-lg">
       <h2 class="text-2xl font-semibold mb-4">Case Study Details</h2>
       <button onclick="toggleDetails()" class="mb-4 bg-gray-200 px-3 py-1 rounded">Show/Hide Full Case Study</button>
       <div id="caseDetails" class="hidden bg-white p-4 rounded shadow">
