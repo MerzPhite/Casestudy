@@ -54,7 +54,7 @@
         }
         navLinks.forEach(link => {
           link.classList.remove('active-tab');
-          if (link.getAttribute('href') === `#${current}`) {
+          if (link.getAttribute('href') === `#${current}` && current !== 'trust') {
             link.classList.add('active-tab');
           }
         });
@@ -79,21 +79,11 @@
     // Add at the top of the script
     let isLocalDropdownScroll = false;
 
-    // Listen for dropdown scroll target changes from Firebase
-    firebase.database().ref('presentation/dropdownScrollTarget').on('value', (snapshot) => {
-      const data = snapshot.val();
-      if (data && typeof data.index === 'number' && !isLocalDropdownScroll) {
-        let selector = '';
-        if (data.type === 'advice') selector = '.advice-box';
-        if (data.type === 'future') selector = '.future-advice-box';
-        if (data.type === 'trust') selector = '.trust-advice-box';
-        const box = document.querySelectorAll(selector)[data.index];
-        if (box) {
-          const isMobile = window.innerWidth < 640;
-          const yOffset = isMobile ? -60 : -80;
-          const y = box.getBoundingClientRect().top + window.pageYOffset + yOffset;
-          window.scrollTo({ top: y, behavior: 'smooth' });
-        }
+    // Add the Firebase listener for dropdown scroll sync
+    firebase.database().ref('presentation/dropdownScroll').on('value', (snapshot) => {
+      const y = snapshot.val();
+      if (typeof y === 'number' && !isLocalDropdownScroll) {
+        window.scrollTo({ top: y, behavior: 'smooth' });
       }
     });
 
@@ -111,13 +101,12 @@
         setTimeout(() => {
           const box = document.querySelectorAll('.advice-box')[index];
           if (box) {
-            const isMobile = window.innerWidth < 640;
-            const yOffset = isMobile ? -60 : -80;
+            const yOffset = -80;
             const y = box.getBoundingClientRect().top + window.pageYOffset + yOffset;
             window.scrollTo({ top: y, behavior: 'smooth' });
-            // Write dropdown type and index to Firebase and prevent feedback loop
+            // Write scroll position to Firebase and prevent feedback loop
             isLocalDropdownScroll = true;
-            firebase.database().ref('presentation/dropdownScrollTarget').set({ type: 'advice', index });
+            firebase.database().ref('presentation/dropdownScroll').set(y);
             setTimeout(() => { isLocalDropdownScroll = false; }, 500);
           }
         }, 100);
@@ -170,12 +159,11 @@
         setTimeout(() => {
           const box = document.querySelectorAll('.future-advice-box')[index];
           if (box) {
-            const isMobile = window.innerWidth < 640;
-            const yOffset = isMobile ? -60 : -80;
+            const yOffset = -80;
             const y = box.getBoundingClientRect().top + window.pageYOffset + yOffset;
             window.scrollTo({ top: y, behavior: 'smooth' });
             isLocalDropdownScroll = true;
-            firebase.database().ref('presentation/dropdownScrollTarget').set({ type: 'future', index });
+            firebase.database().ref('presentation/dropdownScroll').set(y);
             setTimeout(() => { isLocalDropdownScroll = false; }, 500);
           }
         }, 100);
@@ -228,12 +216,11 @@
         setTimeout(() => {
           const box = document.querySelectorAll('.trust-advice-box')[index];
           if (box) {
-            const isMobile = window.innerWidth < 640;
-            const yOffset = isMobile ? -60 : -80;
+            const yOffset = -80;
             const y = box.getBoundingClientRect().top + window.pageYOffset + yOffset;
             window.scrollTo({ top: y, behavior: 'smooth' });
             isLocalDropdownScroll = true;
-            firebase.database().ref('presentation/dropdownScrollTarget').set({ type: 'trust', index });
+            firebase.database().ref('presentation/dropdownScroll').set(y);
             setTimeout(() => { isLocalDropdownScroll = false; }, 500);
           }
         }, 100);
