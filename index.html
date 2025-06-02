@@ -76,7 +76,18 @@
       details.classList.toggle('hidden');
     }
 
-    // Toggle the dropdown for the first advice box
+    // Add at the top of the script
+    let isLocalDropdownScroll = false;
+
+    // Add the Firebase listener for dropdown scroll sync
+    firebase.database().ref('presentation/dropdownScroll').on('value', (snapshot) => {
+      const y = snapshot.val();
+      if (typeof y === 'number' && !isLocalDropdownScroll) {
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+    });
+
+    // In toggleDropdown
     function toggleDropdown(index) {
       const details = document.getElementById(`dropdown-details-${index}`);
       const icon = document.getElementById(`dropdown-icon-${index}`);
@@ -87,13 +98,16 @@
       if (!isOpen) {
         details.classList.remove('hidden');
         icon.classList.add('rotate-180');
-        // Scroll the box into view, offset for sticky nav
         setTimeout(() => {
           const box = document.querySelectorAll('.advice-box')[index];
           if (box) {
             const yOffset = -80;
             const y = box.getBoundingClientRect().top + window.pageYOffset + yOffset;
             window.scrollTo({ top: y, behavior: 'smooth' });
+            // Write scroll position to Firebase and prevent feedback loop
+            isLocalDropdownScroll = true;
+            firebase.database().ref('presentation/dropdownScroll').set(y);
+            setTimeout(() => { isLocalDropdownScroll = false; }, 500);
           }
         }, 100);
       }
@@ -131,6 +145,7 @@
     });
 
     // --- Future Opportunities Dropdown Logic ---
+    // In toggleFutureDropdown
     function toggleFutureDropdown(index) {
       const details = document.getElementById(`future-dropdown-details-${index}`);
       const icon = document.getElementById(`future-dropdown-icon-${index}`);
@@ -147,6 +162,9 @@
             const yOffset = -80;
             const y = box.getBoundingClientRect().top + window.pageYOffset + yOffset;
             window.scrollTo({ top: y, behavior: 'smooth' });
+            isLocalDropdownScroll = true;
+            firebase.database().ref('presentation/dropdownScroll').set(y);
+            setTimeout(() => { isLocalDropdownScroll = false; }, 500);
           }
         }, 100);
       }
@@ -184,6 +202,7 @@
     });
 
     // --- Trust Dropdown Logic ---
+    // In toggleTrustDropdown
     function toggleTrustDropdown(index) {
       const details = document.getElementById(`trust-dropdown-details-${index}`);
       const icon = document.getElementById(`trust-dropdown-icon-${index}`);
@@ -200,6 +219,9 @@
             const yOffset = -80;
             const y = box.getBoundingClientRect().top + window.pageYOffset + yOffset;
             window.scrollTo({ top: y, behavior: 'smooth' });
+            isLocalDropdownScroll = true;
+            firebase.database().ref('presentation/dropdownScroll').set(y);
+            setTimeout(() => { isLocalDropdownScroll = false; }, 500);
           }
         }, 100);
       }
@@ -275,8 +297,8 @@
   <!-- Logo and Header in light yellow background -->
   <div style="background: #ffffff; width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;">
     <div class="max-w-4xl mx-auto py-8">
-      <div class="flex justify-center my-6">
-        <img src="attivo-log.webp" alt="Logo" class="h-20 w-auto">
+  <div class="flex justify-center my-6">
+    <img src="attivo-log.webp" alt="Logo" class="h-20 w-auto">
       </div>
       <header class="mb-8">
         <h1 class="text-5xl font-bold mb-2 font-poppins text-gray-900">Case Study: Financial Advice for Sally</h1>
@@ -509,7 +531,7 @@
       </div>
     </section>
   </div>
-  
+
     <section id="fees" class="section py-12 mb-8 rounded-lg ">
       <h2 class="text-2xl font-semibold mb-4"><u>Fees: What would I charge?</u></h2>
       <div class="mb-4">
