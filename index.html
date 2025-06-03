@@ -83,178 +83,138 @@
     firebase.database().ref('presentation/dropdownScroll').on('value', (snapshot) => {
       const y = snapshot.val();
       if (typeof y === 'number' && !isLocalDropdownScroll) {
-        window.scrollTo({ top: y, behavior: 'smooth' });
+        // Wait for dropdown to open/render before scrolling
+        setTimeout(() => {
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }, 120);
       }
     });
 
-    // In toggleDropdown
-    function toggleDropdown(index) {
-      const details = document.getElementById(`dropdown-details-${index}`);
-      const icon = document.getElementById(`dropdown-icon-${index}`);
-      const isOpen = !details.classList.contains('hidden');
-      // Close all dropdowns (if you want only one open at a time)
-      document.querySelectorAll('.advice-details').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('svg[id^="dropdown-icon-"]').forEach(el => el.classList.remove('rotate-180'));
-      if (!isOpen) {
-        details.classList.remove('hidden');
-        icon.classList.add('rotate-180');
-        setTimeout(() => {
-          const box = document.querySelectorAll('.advice-box')[index];
-          if (box) {
-            const yOffset = -80;
-            const y = box.getBoundingClientRect().top + window.pageYOffset + yOffset;
-            window.scrollTo({ top: y, behavior: 'smooth' });
-            // Write scroll position to Firebase and prevent feedback loop
-            isLocalDropdownScroll = true;
-            firebase.database().ref('presentation/dropdownScroll').set(y);
-            setTimeout(() => { isLocalDropdownScroll = false; }, 500);
-          }
-        }, 100);
-      }
-      // Optionally, sync dropdown state to Firebase
-      firebase.database().ref('presentation/currentDropdown').set(isOpen ? null : index);
+    // --- Center Scroll Helper ---
+    function scrollElementToCenter(element) {
+      if (!element) return;
+      const rect = element.getBoundingClientRect();
+      const elementCenter = rect.top + window.pageYOffset + rect.height / 2;
+      const viewportCenter = window.innerHeight / 2;
+      const scrollTo = elementCenter - viewportCenter;
+      window.scrollTo({ top: scrollTo, behavior: 'smooth' });
     }
 
-    // Listen for dropdown state changes from Firebase
-    firebase.database().ref('presentation/currentDropdown').on('value', (snapshot) => {
-      const openIndex = snapshot.val();
+    // --- GLOBAL DROPDOWN LOGIC ---
+    // Use a single key for all dropdowns
+    function setOpenDropdown(section, index) {
+      firebase.database().ref('presentation/openDropdown').set(index === null ? null : { section, index });
+    }
+
+    // Toggle for Current Opportunities
+    function toggleDropdown(index) {
+      const box = document.querySelectorAll('.advice-box')[index];
+      const details = document.getElementById(`dropdown-details-${index}`);
+      const isOpen = !details.classList.contains('hidden');
+      setOpenDropdown('current', isOpen ? null : index);
+      if (!isOpen) {
+        setTimeout(() => {
+          scrollElementToCenter(box);
+        }, 100);
+      }
+    }
+
+    // Toggle for Future Opportunities
+    function toggleFutureDropdown(index) {
+      const box = document.querySelectorAll('.future-advice-box')[index];
+      const details = document.getElementById(`future-dropdown-details-${index}`);
+      const isOpen = !details.classList.contains('hidden');
+      setOpenDropdown('future', isOpen ? null : index);
+      if (!isOpen) {
+        setTimeout(() => {
+          scrollElementToCenter(box);
+        }, 100);
+      }
+    }
+
+    // Toggle for Trust
+    function toggleTrustDropdown(index) {
+      const box = document.querySelectorAll('.trust-advice-box')[index];
+      const details = document.getElementById(`trust-dropdown-details-${index}`);
+      const isOpen = !details.classList.contains('hidden');
+      setOpenDropdown('trust', isOpen ? null : index);
+      if (!isOpen) {
+        setTimeout(() => {
+          scrollElementToCenter(box);
+        }, 100);
+      }
+    }
+
+    // Listen for openDropdown changes and update all dropdowns accordingly
+    let lastOpenDropdown = null;
+    firebase.database().ref('presentation/openDropdown').on('value', (snapshot) => {
+      const open = snapshot.val();
+      // Current Opportunities
       document.querySelectorAll('.advice-box').forEach((box, idx) => {
         const details = box.querySelector('.advice-details');
         const icon = document.getElementById(`dropdown-icon-${idx}`);
-        // Remove all highlight classes first
-        box.classList.remove('bg-green-100', 'border-green-500', 'shadow-lg', 'bg-white', 'bg-yellow-100', 'border-yellow-500');
-        if (idx === openIndex) {
-          // Highlight the open dropdown box in green
+        box.classList.remove('bg-green-100', 'border-green-500', 'shadow-lg', 'bg-white');
+        if (open && open.section === 'current' && open.index === idx) {
           box.classList.add('bg-green-100', 'border-green-500', 'shadow-lg');
           if (details) details.classList.remove('hidden');
           if (icon) icon.classList.add('rotate-180');
         } else {
-          // Use your default color for closed boxes (e.g., white or yellow)
           box.classList.add('bg-white');
           if (details) details.classList.add('hidden');
           if (icon) icon.classList.remove('rotate-180');
         }
       });
-    });
-
-    // Set default dropdown state on first load
-    firebase.database().ref('presentation/currentDropdown').once('value', (snapshot) => {
-      if (!snapshot.exists()) {
-        firebase.database().ref('presentation/currentDropdown').set(null);
-      }
-    });
-
-    // --- Future Opportunities Dropdown Logic ---
-    // In toggleFutureDropdown
-    function toggleFutureDropdown(index) {
-      const details = document.getElementById(`future-dropdown-details-${index}`);
-      const icon = document.getElementById(`future-dropdown-icon-${index}`);
-      const isOpen = !details.classList.contains('hidden');
-      // Close all dropdowns (only one open at a time)
-      document.querySelectorAll('.future-advice-details').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('svg[id^="future-dropdown-icon-"]').forEach(el => el.classList.remove('rotate-180'));
-      if (!isOpen) {
-        details.classList.remove('hidden');
-        icon.classList.add('rotate-180');
-        setTimeout(() => {
-          const box = document.querySelectorAll('.future-advice-box')[index];
-          if (box) {
-            const yOffset = -80;
-            const y = box.getBoundingClientRect().top + window.pageYOffset + yOffset;
-            window.scrollTo({ top: y, behavior: 'smooth' });
-            isLocalDropdownScroll = true;
-            firebase.database().ref('presentation/dropdownScroll').set(y);
-            setTimeout(() => { isLocalDropdownScroll = false; }, 500);
-          }
-        }, 100);
-      }
-      // Sync dropdown state to Firebase
-      firebase.database().ref('presentation/currentFutureDropdown').set(isOpen ? null : index);
-    }
-
-    // Listen for future dropdown state changes from Firebase
-    firebase.database().ref('presentation/currentFutureDropdown').on('value', (snapshot) => {
-      const openIndex = snapshot.val();
+      // Future Opportunities
       document.querySelectorAll('.future-advice-box').forEach((box, idx) => {
         const details = box.querySelector('.future-advice-details');
         const icon = document.getElementById(`future-dropdown-icon-${idx}`);
-        // Remove all highlight classes first
-        box.classList.remove('bg-green-100', 'border-green-500', 'shadow-lg', 'bg-white', 'bg-yellow-100', 'border-yellow-500');
-        if (idx === openIndex) {
-          // Highlight the open dropdown box in green
+        box.classList.remove('bg-green-100', 'border-green-500', 'shadow-lg', 'bg-white');
+        if (open && open.section === 'future' && open.index === idx) {
           box.classList.add('bg-green-100', 'border-green-500', 'shadow-lg');
           if (details) details.classList.remove('hidden');
           if (icon) icon.classList.add('rotate-180');
         } else {
-          // Use default color for closed boxes
           box.classList.add('bg-white');
           if (details) details.classList.add('hidden');
           if (icon) icon.classList.remove('rotate-180');
         }
       });
-    });
-
-    // Set default future dropdown state on first load
-    firebase.database().ref('presentation/currentFutureDropdown').once('value', (snapshot) => {
-      if (!snapshot.exists()) {
-        firebase.database().ref('presentation/currentFutureDropdown').set(null);
-      }
-    });
-
-    // --- Trust Dropdown Logic ---
-    // In toggleTrustDropdown
-    function toggleTrustDropdown(index) {
-      const details = document.getElementById(`trust-dropdown-details-${index}`);
-      const icon = document.getElementById(`trust-dropdown-icon-${index}`);
-      const isOpen = !details.classList.contains('hidden');
-      // Close all dropdowns (only one open at a time)
-      document.querySelectorAll('.trust-advice-details').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('svg[id^="trust-dropdown-icon-"]').forEach(el => el.classList.remove('rotate-180'));
-      if (!isOpen) {
-        details.classList.remove('hidden');
-        icon.classList.add('rotate-180');
-        setTimeout(() => {
-          const box = document.querySelectorAll('.trust-advice-box')[index];
-          if (box) {
-            const yOffset = -80;
-            const y = box.getBoundingClientRect().top + window.pageYOffset + yOffset;
-            window.scrollTo({ top: y, behavior: 'smooth' });
-            isLocalDropdownScroll = true;
-            firebase.database().ref('presentation/dropdownScroll').set(y);
-            setTimeout(() => { isLocalDropdownScroll = false; }, 500);
-          }
-        }, 100);
-      }
-      // Sync dropdown state to Firebase
-      firebase.database().ref('presentation/currentTrustDropdown').set(isOpen ? null : index);
-    }
-
-    // Listen for trust dropdown state changes from Firebase
-    firebase.database().ref('presentation/currentTrustDropdown').on('value', (snapshot) => {
-      const openIndex = snapshot.val();
+      // Trust
       document.querySelectorAll('.trust-advice-box').forEach((box, idx) => {
         const details = box.querySelector('.trust-advice-details');
         const icon = document.getElementById(`trust-dropdown-icon-${idx}`);
-        // Remove all highlight classes first
-        box.classList.remove('bg-green-100', 'border-green-500', 'shadow-lg', 'bg-white', 'bg-yellow-100', 'border-yellow-500');
-        if (idx === openIndex) {
-          // Highlight the open dropdown box in green
+        box.classList.remove('bg-green-100', 'border-green-500', 'shadow-lg', 'bg-white');
+        if (open && open.section === 'trust' && open.index === idx) {
           box.classList.add('bg-green-100', 'border-green-500', 'shadow-lg');
           if (details) details.classList.remove('hidden');
           if (icon) icon.classList.add('rotate-180');
         } else {
-          // Use default color for closed boxes
           box.classList.add('bg-white');
           if (details) details.classList.add('hidden');
           if (icon) icon.classList.remove('rotate-180');
         }
       });
+      // Scroll to the open dropdown if it changed
+      if (open && JSON.stringify(open) !== JSON.stringify(lastOpenDropdown)) {
+        setTimeout(() => {
+          let box = null;
+          if (open.section === 'current') {
+            box = document.querySelectorAll('.advice-box')[open.index];
+          } else if (open.section === 'future') {
+            box = document.querySelectorAll('.future-advice-box')[open.index];
+          } else if (open.section === 'trust') {
+            box = document.querySelectorAll('.trust-advice-box')[open.index];
+          }
+          scrollElementToCenter(box);
+        }, 120);
+      }
+      lastOpenDropdown = open;
     });
 
-    // Set default trust dropdown state on first load
-    firebase.database().ref('presentation/currentTrustDropdown').once('value', (snapshot) => {
+    // Set default openDropdown state on first load
+    firebase.database().ref('presentation/openDropdown').once('value', (snapshot) => {
       if (!snapshot.exists()) {
-        firebase.database().ref('presentation/currentTrustDropdown').set(null);
+        firebase.database().ref('presentation/openDropdown').set(null);
       }
     });
 
@@ -283,7 +243,7 @@
     });
   </script>
 </head>
-<body class="bg-gray-50 text-gray-900">
+<body class="bg-gray-100 text-gray-900">
   <!-- Sticky Navigation at the very top -->
   <nav class="sticky-nav sticky top-0 w-full z-50 py-2 bg-white shadow">
     <ul class="flex space-x-4 justify-center">
