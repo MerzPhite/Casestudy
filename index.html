@@ -159,7 +159,7 @@
           if (details) details.classList.remove('hidden');
           if (icon) icon.classList.add('rotate-180');
         } else {
-          box.classList.add('bg-white');
+          box.classList.add('bg-');
           if (details) details.classList.add('hidden');
           if (icon) icon.classList.remove('rotate-180');
         }
@@ -243,7 +243,7 @@
     });
   </script>
 </head>
-<body class="bg-gray-100 text-gray-900">
+<body class="bg-gray-100 text-gray-900 font-poppins">
   <!-- Sticky Navigation at the very top -->
   <nav class="sticky-nav sticky top-0 w-full z-50 py-2 bg-white shadow">
     <ul class="flex space-x-4 justify-center">
@@ -269,7 +269,7 @@
   <div class="max-w-4xl mx-auto p-6">
     <!-- Sections -->
     <section id="current" class="section py-12 mb-8 rounded-lg ">
-      <h2 class="text-2xl font-semibold mb-4"><u>What are the advice opportunities now?</u></h2>
+      <h2 class="text-2xl font-semibold mb-4 text-center"><u>What are the advice opportunities now?</u></h2>
       <div id="advice-boxes" class="space-y-3">
         <!-- 0 -->
         <div class="advice-box cursor-pointer transition-all p-4 rounded" onclick="toggleDropdown(0)">
@@ -493,7 +493,7 @@
   </div>
 
     <section id="fees" class="section py-12 mb-8 rounded-lg ">
-      <h2 class="text-2xl font-semibold mb-4"><u>Fees: What would I charge?</u></h2>
+      <h2 class="text-2xl font-semibold mb-4 text-center"><u>Fees: What would I charge?</u></h2>
       <div class="mb-4">
         <strong>Initial Advice Fee:</strong>
         <p>3% fee with a minimum of £1,000. 
